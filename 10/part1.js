@@ -1,51 +1,69 @@
-const fs = require('fs');
+const { readFileSync } = require('fs');
 const Bot = require('./Bot');
-
 
 const INPUT_FILE = __dirname + '/instructions.txt';
 const EXIT_CONDITION = [61, 17];
-
+const logs = [];
 const result = balanceBots(INPUT_FILE, EXIT_CONDITION);
-console.log(result);
+// console.log(result);
 
 function balanceBots(inputFile, exitCondition) {
-
-  const botsList = {};
   exitCondition.sort();
 
-  const instructions = fs.readFileSync(inputFile, 'utf-8')
-    .split('\n')
-    .map(parseInstruction);
+  const instructions = readFileSync(inputFile, 'utf-8')
+    .trim()
+    .split('\n');
 
-  // return instructions;
+  const [bots, botInstructions] = parseInstructions(instructions);
 
+  const exitCode = executeBotInstructions(bots, botInstructions);
 
-  // do the instructions one at a time
-  // if the instruction can't be done, skip it
-  // if it can be done, do it and remove it
+  // console.log(JSON.stringify(logs));
 
-  let i = 0;
-
-  while (instructions.length) {
-    if (i >= instructions.length) {
-      console.log('end is reached');
-      i = 0;
-    }
-
-    const instruction = instructions[i];
-
-    const [resultCode, resultBot] = executeInstruction(instruction, botsList, exitCondition);
-
-    if (resultCode === 2) return resultBot;
-    else if (resultCode === 1) {
-      instructions.splice(i, 1);
-    } else if (resultCode === 0) {
-      i++;
-    }
-  }
 }
 
+function executeBotInstructions(bots, botInstructions) {
 
+  let stop = false;
+
+  while (!stop) {
+    stop = true;
+    for (let i = 0; i < bots.length; i++) {
+      const bot = bots[i];
+
+      if (!bot || bot.length < 2) continue;
+      stop = false;
+      logs.push(i);
+
+      // bot.sort((x, y) => {
+      //   // DARNIT
+      //   if (x < y) return -1;
+      //   if (x > y) return 1;
+      //   return 0;
+      // });
+      // bot.sort();
+      bot.sort((a, b) => a - b);
+
+      if (bot[0] === 17 && bot[1] === 61) console.log('part 1 solution', i);
+
+      const [lowType, lowNum] = botInstructions[i].low;
+      const [highType, highNum] = botInstructions[i].high;
+
+      if (lowType === 'bot') {
+        if (!bots[lowNum]) bots[lowNum] = [];
+        bots[lowNum].push(bot[0]);
+      }
+
+      if (highType === 'bot') {
+        if (!bots[highNum]) bots[highNum] = [];
+        bots[highNum].push(bot[1]);
+      }
+
+      bots[i] = [];
+    }
+  }
+
+}
 
 
 
@@ -69,6 +87,7 @@ function executeInstruction(instruction, botsList, exitCondition) {
     const { lowAction, highAction } = instruction;
 
     if (bot === undefined || !bot.full) return [0, null];
+    logs.push(instruction.botNumber);
 
     const chips = bot.compare();
     const actions = [lowAction, highAction];
@@ -113,38 +132,33 @@ function executeInstruction(instruction, botsList, exitCondition) {
 
 
 
-function parseInstruction(instruction) {
-  const inputRegex = /value (\d+) goes to bot (\d+)/;
+function parseInstructions(instructions) {
+  const bots = [];
+  const botInstructions = [];
+  // const botRegex = /bot (\d+) gives low to (bot|output) (\d+) and high to (bot|output) (\d+)/;
+  // const inputRegex = /value (\d+) goes to bot (\d+)/;
+
   const botRegex = /bot (\d+) gives low to (bot|output) (\d+) and high to (bot|output) (\d+)/;
+  const inputRegex = /value (\d+) goes to bot (\d+)/;
 
-  let output;
-  let matches = instruction.match(inputRegex);
+  for (const instruction of instructions) {
+    let matches;
 
-  if (matches) {
-    const [total, chipValue, botNumber] = matches;
-    output = {
-      instructionType: 'input',
-      botNumber: +botNumber,
-      chipValue: +chipValue,
-    };
-  } else {
-    matches = instruction.match(botRegex);
-    const [total, botNumber, lowReceiver, lowValue, highReceiver, highValue] = matches;
-
-    output = {
-      instructionType: 'bot',
-      botNumber: +botNumber,
-      lowAction: {
-        type: lowReceiver,
-        value: +lowValue,
-      },
-      highAction: {
-        type: highReceiver,
-        value: +highValue,
-      },
-    };
+    if ((matches = botRegex.exec(instruction))) {
+      const [, botNum, lowType, lowValue, highType, highValue] = matches;
+      botInstructions[+botNum] = {
+        low: [lowType, +lowValue],
+        high: [highType, +highValue],
+      };
+    } else if ((matches = inputRegex.exec(instruction))) {
+      const chipValue = +matches[1];
+      const botNum = +matches[2];
+      bots[botNum] = bots[botNum] || [];
+      bots[botNum].push(chipValue);
+    }
   }
-  return output;
+
+  return [bots, botInstructions];
 }
 
 /*
@@ -152,3 +166,8 @@ function parseInstruction(instruction) {
   Then do the bot instructions
   do something if the target is output
 */
+
+
+
+// My answer 38
+// Correct answer 141
