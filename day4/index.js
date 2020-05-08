@@ -13,8 +13,8 @@ const result2 = part2(FILE_PATH);
 
 console.log();
 console.log('Day 4');
-console.log('part 1', result1);
-console.log('part 2', result2);
+console.log('part 1:', result1);
+console.log('part 2:', result2);
 
 function part1(filepath) {
   return readFileSync(filepath, 'utf-8')

@@ -12,8 +12,8 @@ const [exitCondition, output] = balanceBots(INPUT_FILE, EXIT_CONDITION);
 
 console.log();
 console.log('Day 10');
-console.log('part 1', exitCondition);
-console.log('part 2', output);
+console.log('part 1:', exitCondition);
+console.log('part 2:', output);
 
 function balanceBots(inputFile, exitCondition) {
   exitCondition.sort();
