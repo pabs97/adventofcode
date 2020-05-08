@@ -12,6 +12,9 @@ const FILE_PATH = __dirname + '/input.txt';
 
 const result1 = part1(FILE_PATH);
 const result2 = part2(FILE_PATH);
+
+console.log();
+console.log('Day 1');
 console.log('part 1', result1);
 console.log('part 2', result2);
 

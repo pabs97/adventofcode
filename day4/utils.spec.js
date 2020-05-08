@@ -4,7 +4,7 @@ const {
   filterByChecksum,
   parseEntry,
   calculateChecksum,
-} = require('./index');
+} = require('./utils');
 
 describe('Day 4 utils', () => {
 

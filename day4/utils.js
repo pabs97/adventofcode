@@ -54,7 +54,6 @@ function calculateChecksum(encryptedName) {
       }
     });
 
-
   counts.splice(5);
 
   return counts

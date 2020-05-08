@@ -4,7 +4,7 @@ const {
   newHeading,
   parseInstruction,
   computeInstruction,
-} = require('./index');
+} = require('./utils');
 
 describe('Day 1 utils', () => {
 

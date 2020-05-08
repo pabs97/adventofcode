@@ -1,22 +1,3 @@
-const { readFileSync } = require('fs');
-
-const INPUT_FILE = __dirname + '/instructions.txt';
-const EXIT_CONDITION = [61, 17];
-const [part_1_solution, part_2_solution] = balanceBots(INPUT_FILE, EXIT_CONDITION);
-console.log({ part_1_solution, part_2_solution });
-
-function balanceBots(inputFile, exitCondition) {
-  exitCondition.sort();
-
-  const instructions = readFileSync(inputFile, 'utf-8')
-    .trim()
-    .split('\n');
-
-  const [bots, botInstructions] = parseInstructions(instructions);
-
-  return executeBotInstructions(bots, botInstructions, exitCondition);
-}
-
 function executeBotInstructions(bots, botInstructions, exitCondition) {
 
   let validBots = true;
@@ -60,8 +41,7 @@ function executeBotInstructions(bots, botInstructions, exitCondition) {
     }
   }
 
-  return [exitConditionResult, getProductOfRange(outputs, 0, 3)];
-
+  return [exitConditionResult, outputs];
 }
 
 function getProductOfRange(arr, a, b) {
@@ -69,7 +49,6 @@ function getProductOfRange(arr, a, b) {
     .slice(a, b)
     .reduce((accum, val) => accum * val, 1)
 }
-
 
 function parseInstructions(instructions) {
   const bots = [];
@@ -96,3 +75,9 @@ function parseInstructions(instructions) {
 
   return [bots, botInstructions];
 }
+
+module.exports = {
+  executeBotInstructions,
+  getProductOfRange,
+  parseInstructions,
+};
