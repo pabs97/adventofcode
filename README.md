@@ -18,7 +18,7 @@ npm i
 ```
 
 ## Usage
-### Run all days
+### Run All Days
 ```
 npm start
 ```
